@@ -1,0 +1,104 @@
+{
+  "data": [
+    {
+      "id": "explorer",
+      "name": "Explorer",
+      "path": "on_your_own",
+      "currency": "EUR",
+      "price_eur": 24.95,
+      "billing": "€24.95 today, then it renews automatically every month at €24.95 until you cancel.",
+      "billing_interval": "month",
+      "auto_renews": true,
+      "renewal_price_eur": 24.95,
+      "renews_every": "month",
+      "per_month_eur": 24.95,
+      "includes": [
+        "Listings matched to your city, budget and move-in date, sent the moment they go live, on WhatsApp and in the web app",
+        "2,000+ housing sites scanned for you",
+        "Exclusive discount codes on listings from housing partners",
+        "Support on WhatsApp and by email",
+        "If you have not found a home when your plan ends, you can ask for one free extension by email before or within 7 days after it expires; it is granted at Socials' discretion, one per subscription (Terms 5.2)"
+      ],
+      "guarantee": null
+    },
+    {
+      "id": "seeker",
+      "name": "Seeker",
+      "path": "on_your_own",
+      "currency": "EUR",
+      "price_eur": 39.9,
+      "billing": "€39.90 every 2 months (€19.95 a month), renewing automatically every 2 months until you cancel.",
+      "billing_interval": "2 months",
+      "auto_renews": true,
+      "renewal_price_eur": 39.9,
+      "renews_every": "2 months",
+      "per_month_eur": 19.95,
+      "includes": [
+        "Listings matched to your city, budget and move-in date, sent the moment they go live, on WhatsApp and in the web app",
+        "2,000+ housing sites scanned for you",
+        "Exclusive discount codes on listings from housing partners",
+        "Support on WhatsApp and by email",
+        "If you have not found a home when your plan ends, you can ask for one free extension by email before or within 7 days after it expires; it is granted at Socials' discretion, one per subscription (Terms 5.2)"
+      ],
+      "guarantee": null
+    },
+    {
+      "id": "vip-3-months",
+      "name": "VIP Keys Pass, 3 months",
+      "path": "with_an_expert",
+      "currency": "EUR",
+      "price_eur": 94.95,
+      "billing": "€94.95 today covers the first 3 months, then it renews automatically at €94.95 a month until you cancel.",
+      "billing_interval": "3 months, then monthly",
+      "auto_renews": true,
+      "renewal_price_eur": 94.95,
+      "renews_every": "month",
+      "per_month_eur": 31.65,
+      "includes": [
+        "Everything a subscription includes",
+        "A personal housing expert: a kick-off call to plan your search, help with your replies to landlords, checks on a landlord before you pay, and a read of your contract before you sign"
+      ],
+      "guarantee": {
+        "summary": "If you have not signed a lease within 90 days of buying the VIP Keys Pass, what you paid at purchase is refunded (€94.95 for 3 months, €189.95 for Lifetime) and your expert keeps helping you for free until you move in. Conditions apply.",
+        "url": "https://www.socials.homes/terms#vip-guarantee"
+      }
+    },
+    {
+      "id": "vip-lifetime",
+      "name": "VIP Keys Pass, Lifetime",
+      "path": "with_an_expert",
+      "currency": "EUR",
+      "price_eur": 189.95,
+      "billing": "€189.95 once. It never renews: your alerts continue and your expert helps you until you move in.",
+      "billing_interval": "one-time",
+      "auto_renews": false,
+      "renewal_price_eur": null,
+      "renews_every": null,
+      "per_month_eur": null,
+      "includes": [
+        "Everything a subscription includes",
+        "A personal housing expert: a kick-off call to plan your search, help with your replies to landlords, checks on a landlord before you pay, and a read of your contract before you sign"
+      ],
+      "guarantee": {
+        "summary": "If you have not signed a lease within 90 days of buying the VIP Keys Pass, what you paid at purchase is refunded (€94.95 for 3 months, €189.95 for Lifetime) and your expert keeps helping you for free until you move in. Conditions apply.",
+        "url": "https://www.socials.homes/terms#vip-guarantee"
+      }
+    }
+  ],
+  "currency": "EUR",
+  "prices_note": "Prices are in euros and include VAT where applicable. Checkout may show the amount in your local currency.",
+  "cancellation": "Cancel anytime in the app and you are never billed again. Cancelling stops future renewals; your access runs to the end of the period you already paid for.",
+  "refunds": "Payments are not refundable (Terms 5.1), except the VIP Keys Pass guarantee (Terms 5.5) and the 14-day right of withdrawal from the VIP expert service (Terms 5.6).",
+  "vip_guarantee": {
+    "summary": "If you have not signed a lease within 90 days of buying the VIP Keys Pass, what you paid at purchase is refunded (€94.95 for 3 months, €189.95 for Lifetime) and your expert keeps helping you for free until you move in. Conditions apply.",
+    "conditions": [
+      "Book your 15-minute kick-off call with your expert within 48 hours of purchase",
+      "Keep your search budget within the range you agree with your expert",
+      "Apply within 24 hours to the listings sent to you that match the criteria you agreed with your expert"
+    ],
+    "how_to_claim": "Claim from day 80 after purchase until 14 days after the 90 days end, by emailing hello@socials.homes. One claim per person.",
+    "url": "https://www.socials.homes/terms#vip-guarantee"
+  },
+  "pricing_url": "https://www.socials.homes/pricing",
+  "terms_url": "https://www.socials.homes/terms"
+}

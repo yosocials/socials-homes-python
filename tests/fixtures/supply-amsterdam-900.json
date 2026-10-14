@@ -1,0 +1,26 @@
+{
+  "data": {
+    "city": {
+      "slug": "amsterdam",
+      "name": "Amsterdam",
+      "country": "NL",
+      "country_name": "Netherlands",
+      "links": {
+        "self": "https://www.socials.homes/api/v1/cities/amsterdam",
+        "supply": "https://www.socials.homes/api/v1/cities/amsterdam/supply",
+        "page": "https://www.socials.homes/housing/amsterdam",
+        "signup": "https://www.socials.homes/signup?city=amsterdam"
+      }
+    },
+    "supply": {
+      "available": true,
+      "live_listings": 1187,
+      "budget_max_eur": 900,
+      "listings_within_budget": 193,
+      "level": "ok",
+      "suggested_budget_eur": null
+    },
+    "note": "These are the listings Socials Homes counts in its own copy of the market; some housing sites are not counted here, so alerts can bring more. Counts refresh about every 10 minutes and change as homes are let.",
+    "signup_url": "https://www.socials.homes/signup?city=amsterdam"
+  }
+}

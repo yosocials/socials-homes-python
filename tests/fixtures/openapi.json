@@ -1,0 +1,2338 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Socials Homes API",
+    "version": "1.0.1",
+    "summary": "Public, read-only: supported cities, plans and prices, and live rental listing counts. No authentication.",
+    "description": "Public, read-only data from Socials Homes, a rental listing alert service for people moving to a new city: the cities it covers, its plans and prices in EUR, and live rental listing counts per city and budget. The same data the website, its markdown pages and the Socials Homes MCP servers serve.\n\n## Authentication\n\nNone. Every endpoint is public and anonymous: there are no accounts, API keys, OAuth clients or scopes, so `security` is empty. Send no credentials.\n\n## Safe to call\n\nNothing in this API writes. Every operation is a GET; POST, PUT, PATCH and DELETE answer 405. There is no separate sandbox because there is nothing to protect production from: call https://www.socials.homes directly while you build.\n\n## Rate limits\n\n300 requests per 60 seconds per IP address, shared by every /api/v1 endpoint; the supply endpoint also counts against 600 requests per 3600 seconds per IP address, on top of the api limit. Every endpoint response carries the IETF RateLimit-Policy and RateLimit headers (and RateLimit-Limit, -Remaining and -Reset). Over a limit the answer is 429 with Retry-After. Limits are counted per server instance, so treat them as ceilings.\n\n## Errors\n\nEvery error is an RFC 9457 problem (application/problem+json) with type, title, status, detail, a machine-readable code and a resolution hint. Codes: invalid_parameter, not_found, city_not_found, method_not_allowed, rate_limited, internal_error. Each type URI links to its section of https://www.socials.homes/developers#errors.\n\n## Pagination\n\nlistCities is cursor-paginated: pass next_cursor back as cursor until it is null. limit is 1 to 200, default 50. The Link header carries rel=\"next\".\n\n## Versioning and deprecation\n\nThe major version is in the path (/api/v1) and in the X-API-Version header. Within v1, changes are additive only: new endpoints, new optional parameters, new fields. Clients must ignore fields they do not know. A breaking change ships as /api/v2, announced in the changelog at https://www.socials.homes/developers#changelog at least 90 days before v1 changes or stops; during that time v1 keeps working and its responses carry Deprecation and Sunset headers. Current version 1.0.1, released 2026-10-14.",
+    "termsOfService": "https://www.socials.homes/terms",
+    "contact": {
+      "name": "Socials Homes",
+      "email": "hello@socials.homes",
+      "url": "https://www.socials.homes/developers"
+    },
+    "license": {
+      "name": "Proprietary, under the Socials Homes terms of service",
+      "url": "https://www.socials.homes/terms"
+    }
+  },
+  "externalDocs": {
+    "description": "Developer docs: quickstart, limits, errors, versioning and changelog",
+    "url": "https://www.socials.homes/developers"
+  },
+  "servers": [
+    {
+      "url": "https://www.socials.homes",
+      "description": "Production. Every endpoint is read-only, so this is also where to test."
+    }
+  ],
+  "security": [],
+  "tags": [
+    {
+      "name": "meta",
+      "description": "The API index."
+    },
+    {
+      "name": "cities",
+      "description": "The cities Socials Homes covers."
+    },
+    {
+      "name": "supply",
+      "description": "Live rental listing counts."
+    },
+    {
+      "name": "plans",
+      "description": "Plans, prices, renewal and the VIP guarantee."
+    }
+  ],
+  "paths": {
+    "/api/v1": {
+      "get": {
+        "operationId": "getApiIndex",
+        "summary": "API index: every endpoint, the OpenAPI document, the docs and the rate limits",
+        "tags": [
+          "meta"
+        ],
+        "description": "Start here. Lists every endpoint with its URL, the OpenAPI document, the docs, the rate limits and the MCP servers that serve the same data. Read-only.",
+        "responses": {
+          "200": {
+            "description": "The API index.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiIndex"
+                },
+                "examples": {
+                  "index": {
+                    "value": {
+                      "name": "Socials Homes API",
+                      "version": "1",
+                      "spec_version": "1.0.1",
+                      "released": "2026-10-14",
+                      "description": "Public, read-only data from Socials Homes, a rental listing alert service for people moving to a new city: the cities it covers, its plans and prices, and live listing counts per city and budget.",
+                      "authentication": {
+                        "required": false,
+                        "description": "None. Every endpoint is anonymous and read-only: no account, API key, OAuth or sign-up exists or is needed."
+                      },
+                      "read_only": true,
+                      "documentation_url": "https://www.socials.homes/developers",
+                      "documentation_markdown_url": "https://www.socials.homes/developers.md",
+                      "openapi_url": "https://www.socials.homes/openapi.json",
+                      "openapi_yaml_url": "https://www.socials.homes/api/openapi.yaml",
+                      "api_catalog_url": "https://www.socials.homes/.well-known/api-catalog",
+                      "endpoints": [
+                        {
+                          "operation_id": "getApiIndex",
+                          "method": "GET",
+                          "path": "/api/v1",
+                          "url": "https://www.socials.homes/api/v1",
+                          "summary": "API index: every endpoint, the OpenAPI document, the docs and the rate limits"
+                        },
+                        {
+                          "operation_id": "listCities",
+                          "method": "GET",
+                          "path": "/api/v1/cities",
+                          "url": "https://www.socials.homes/api/v1/cities",
+                          "summary": "List the cities Socials Homes covers"
+                        },
+                        {
+                          "operation_id": "getCity",
+                          "method": "GET",
+                          "path": "/api/v1/cities/{slug}",
+                          "url": "https://www.socials.homes/api/v1/cities/{slug}",
+                          "summary": "Get one city by its slug"
+                        },
+                        {
+                          "operation_id": "getCitySupply",
+                          "method": "GET",
+                          "path": "/api/v1/cities/{slug}/supply",
+                          "url": "https://www.socials.homes/api/v1/cities/{slug}/supply",
+                          "summary": "Count live rental listings in a city, optionally at or under a monthly budget"
+                        },
+                        {
+                          "operation_id": "listPlans",
+                          "method": "GET",
+                          "path": "/api/v1/plans",
+                          "url": "https://www.socials.homes/api/v1/plans",
+                          "summary": "List the plans with EUR prices, billing, renewal, inclusions and the VIP guarantee"
+                        }
+                      ],
+                      "rate_limits": [
+                        {
+                          "name": "api",
+                          "limit": 300,
+                          "window_seconds": 60,
+                          "applies_to": "Every /api/v1 request, per IP address"
+                        },
+                        {
+                          "name": "supply",
+                          "limit": 600,
+                          "window_seconds": 3600,
+                          "applies_to": "/api/v1/cities/{slug}/supply, per IP address, on top of the api limit"
+                        }
+                      ],
+                      "mcp_servers": [
+                        {
+                          "name": "Socials Homes",
+                          "url": "https://www.socials.homes/mcp",
+                          "server_card": "https://www.socials.homes/mcp/server-card"
+                        },
+                        {
+                          "name": "Socials Homes Docs",
+                          "url": "https://www.socials.homes/mcp/docs",
+                          "server_card": "https://www.socials.homes/mcp/docs/server-card"
+                        }
+                      ],
+                      "contact": "hello@socials.homes",
+                      "terms_url": "https://www.socials.homes/terms"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "A rate limit is used up. Wait Retry-After seconds.",
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "rate_limited": {
+                    "summary": "Too many requests",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-rate_limited",
+                      "title": "Too many requests",
+                      "status": 429,
+                      "detail": "The \"api\" rate limit (300 requests per 60 seconds per IP address) is used up. Retry after 12 seconds.",
+                      "code": "rate_limited",
+                      "resolution": "Wait the number of seconds in the Retry-After header, then retry. The RateLimit headers on every endpoint response show how much of each budget is left.",
+                      "instance": "/api/v1/cities",
+                      "retry_after_seconds": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something failed on the Socials Homes side. No detail is exposed.",
+            "headers": {
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "internal_error": {
+                    "summary": "Internal error",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-internal_error",
+                      "title": "Internal error",
+                      "status": 500,
+                      "detail": "The request could not be completed. Nothing was changed.",
+                      "code": "internal_error",
+                      "resolution": "Retry after a short wait. If it keeps failing, email hello@socials.homes with the time of the request.",
+                      "instance": "/api/v1/plans"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-rate-limit": [
+          {
+            "policy": "api",
+            "limit": 300,
+            "window_seconds": 60,
+            "scope": "ip",
+            "note": "300 requests per 60 seconds per IP address, shared by every /api/v1 endpoint"
+          }
+        ]
+      }
+    },
+    "/api/v1/cities": {
+      "get": {
+        "operationId": "listCities",
+        "summary": "List the cities Socials Homes covers",
+        "tags": [
+          "cities"
+        ],
+        "description": "Every city where Socials Homes sends rental listing alerts, ordered by slug, 50 per page by default. Filter by country with country. Page with the opaque next_cursor: pass it back as cursor until it is null; the Link header carries the same next page as rel=\"next\". Read-only.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/country"
+          },
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/cursor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of cities.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CityList"
+                },
+                "examples": {
+                  "netherlands": {
+                    "summary": "First two cities in the Netherlands",
+                    "value": {
+                      "data": [
+                        {
+                          "slug": "almere",
+                          "name": "Almere",
+                          "country": "NL",
+                          "country_name": "Netherlands",
+                          "links": {
+                            "self": "https://www.socials.homes/api/v1/cities/almere",
+                            "supply": "https://www.socials.homes/api/v1/cities/almere/supply",
+                            "page": "https://www.socials.homes/housing/almere",
+                            "signup": "https://www.socials.homes/signup?city=almere"
+                          }
+                        },
+                        {
+                          "slug": "amsterdam",
+                          "name": "Amsterdam",
+                          "country": "NL",
+                          "country_name": "Netherlands",
+                          "links": {
+                            "self": "https://www.socials.homes/api/v1/cities/amsterdam",
+                            "supply": "https://www.socials.homes/api/v1/cities/amsterdam/supply",
+                            "page": "https://www.socials.homes/housing/amsterdam",
+                            "signup": "https://www.socials.homes/signup?city=amsterdam"
+                          }
+                        }
+                      ],
+                      "next_cursor": "c1.eyJhZnRlciI6ImFtc3RlcmRhbSJ9"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A parameter is invalid. errors names each one.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "invalid_limit": {
+                    "summary": "Invalid parameter",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-invalid_parameter",
+                      "title": "Invalid parameter",
+                      "status": 400,
+                      "detail": "limit must be a whole number from 1 to 200.",
+                      "code": "invalid_parameter",
+                      "resolution": "Correct the parameters listed in errors and send the request again. Every parameter is described in the OpenAPI document at https://www.socials.homes/openapi.json.",
+                      "instance": "/api/v1/cities",
+                      "errors": [
+                        {
+                          "parameter": "limit",
+                          "in": "query",
+                          "message": "limit must be a whole number from 1 to 200."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "A rate limit is used up. Wait Retry-After seconds.",
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "rate_limited": {
+                    "summary": "Too many requests",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-rate_limited",
+                      "title": "Too many requests",
+                      "status": 429,
+                      "detail": "The \"api\" rate limit (300 requests per 60 seconds per IP address) is used up. Retry after 12 seconds.",
+                      "code": "rate_limited",
+                      "resolution": "Wait the number of seconds in the Retry-After header, then retry. The RateLimit headers on every endpoint response show how much of each budget is left.",
+                      "instance": "/api/v1/cities",
+                      "retry_after_seconds": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something failed on the Socials Homes side. No detail is exposed.",
+            "headers": {
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "internal_error": {
+                    "summary": "Internal error",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-internal_error",
+                      "title": "Internal error",
+                      "status": 500,
+                      "detail": "The request could not be completed. Nothing was changed.",
+                      "code": "internal_error",
+                      "resolution": "Retry after a short wait. If it keeps failing, email hello@socials.homes with the time of the request.",
+                      "instance": "/api/v1/plans"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-rate-limit": [
+          {
+            "policy": "api",
+            "limit": 300,
+            "window_seconds": 60,
+            "scope": "ip",
+            "note": "300 requests per 60 seconds per IP address, shared by every /api/v1 endpoint"
+          }
+        ]
+      }
+    },
+    "/api/v1/cities/{slug}": {
+      "get": {
+        "operationId": "getCity",
+        "summary": "Get one city by its slug",
+        "tags": [
+          "cities"
+        ],
+        "description": "One covered city by its slug, with links to its live counts, its page and the signup funnel. A slug that is not covered answers 404 city_not_found with close matches in suggestions. Read-only.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The city.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CityResponse"
+                },
+                "examples": {
+                  "the_hague": {
+                    "value": {
+                      "data": {
+                        "slug": "the_hague",
+                        "name": "The Hague",
+                        "country": "NL",
+                        "country_name": "Netherlands",
+                        "links": {
+                          "self": "https://www.socials.homes/api/v1/cities/the_hague",
+                          "supply": "https://www.socials.homes/api/v1/cities/the_hague/supply",
+                          "page": "https://www.socials.homes/housing/the-hague",
+                          "signup": "https://www.socials.homes/signup?city=the_hague"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A parameter is invalid. errors names each one.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "invalid_limit": {
+                    "summary": "Invalid parameter",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-invalid_parameter",
+                      "title": "Invalid parameter",
+                      "status": 400,
+                      "detail": "limit must be a whole number from 1 to 200.",
+                      "code": "invalid_parameter",
+                      "resolution": "Correct the parameters listed in errors and send the request again. Every parameter is described in the OpenAPI document at https://www.socials.homes/openapi.json.",
+                      "instance": "/api/v1/cities",
+                      "errors": [
+                        {
+                          "parameter": "limit",
+                          "in": "query",
+                          "message": "limit must be a whole number from 1 to 200."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No covered city has this slug. suggestions lists close matches when there are any.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "city_not_found": {
+                    "summary": "City not found",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-city_not_found",
+                      "title": "City not found",
+                      "status": 404,
+                      "detail": "\"den_haag\" is not a city Socials Homes covers. Close matches: the_hague. It covers 124 cities; GET https://www.socials.homes/api/v1/cities lists them.",
+                      "code": "city_not_found",
+                      "resolution": "Use a slug from GET https://www.socials.homes/api/v1/cities, for example amsterdam or the_hague. Slugs are lowercase and use underscores.",
+                      "instance": "/api/v1/cities/den_haag",
+                      "suggestions": [
+                        {
+                          "slug": "the_hague",
+                          "name": "The Hague",
+                          "country": "NL",
+                          "country_name": "Netherlands"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "A rate limit is used up. Wait Retry-After seconds.",
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "rate_limited": {
+                    "summary": "Too many requests",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-rate_limited",
+                      "title": "Too many requests",
+                      "status": 429,
+                      "detail": "The \"api\" rate limit (300 requests per 60 seconds per IP address) is used up. Retry after 12 seconds.",
+                      "code": "rate_limited",
+                      "resolution": "Wait the number of seconds in the Retry-After header, then retry. The RateLimit headers on every endpoint response show how much of each budget is left.",
+                      "instance": "/api/v1/cities",
+                      "retry_after_seconds": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something failed on the Socials Homes side. No detail is exposed.",
+            "headers": {
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "internal_error": {
+                    "summary": "Internal error",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-internal_error",
+                      "title": "Internal error",
+                      "status": 500,
+                      "detail": "The request could not be completed. Nothing was changed.",
+                      "code": "internal_error",
+                      "resolution": "Retry after a short wait. If it keeps failing, email hello@socials.homes with the time of the request.",
+                      "instance": "/api/v1/plans"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-rate-limit": [
+          {
+            "policy": "api",
+            "limit": 300,
+            "window_seconds": 60,
+            "scope": "ip",
+            "note": "300 requests per 60 seconds per IP address, shared by every /api/v1 endpoint"
+          }
+        ]
+      }
+    },
+    "/api/v1/cities/{slug}/supply": {
+      "get": {
+        "operationId": "getCitySupply",
+        "summary": "Count live rental listings in a city, optionally at or under a monthly budget",
+        "tags": [
+          "supply"
+        ],
+        "description": "How many live rental listings Socials Homes counts in a city right now and, with budget_max_eur, how many are at or under that monthly rent. The counts come from the same cache the signup funnel uses, refreshed about every 10 minutes, and cover the sites Socials Homes scans, so alerts can bring more. When counts are unavailable the answer says so (available: false) and never reports zero. This endpoint also counts against the supply rate limit. Read-only.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/slug"
+          },
+          {
+            "$ref": "#/components/parameters/budget_max_eur"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The counts, or a plain statement that they are unavailable.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplyResponse"
+                },
+                "examples": {
+                  "available": {
+                    "summary": "Counts available (illustrative numbers)",
+                    "value": {
+                      "data": {
+                        "city": {
+                          "slug": "berlin",
+                          "name": "Berlin",
+                          "country": "DE",
+                          "country_name": "Germany",
+                          "links": {
+                            "self": "https://www.socials.homes/api/v1/cities/berlin",
+                            "supply": "https://www.socials.homes/api/v1/cities/berlin/supply",
+                            "page": "https://www.socials.homes/housing/berlin",
+                            "signup": "https://www.socials.homes/signup?city=berlin"
+                          }
+                        },
+                        "supply": {
+                          "available": true,
+                          "live_listings": 1840,
+                          "budget_max_eur": 800,
+                          "listings_within_budget": 212,
+                          "level": "ok",
+                          "suggested_budget_eur": null
+                        },
+                        "note": "These are the listings Socials Homes counts in its own copy of the market; some housing sites are not counted here, so alerts can bring more. Counts refresh about every 10 minutes and change as homes are let.",
+                        "signup_url": "https://www.socials.homes/signup?city=berlin"
+                      }
+                    }
+                  },
+                  "unavailable": {
+                    "summary": "Counts unavailable, which is not zero",
+                    "value": {
+                      "data": {
+                        "city": {
+                          "slug": "berlin",
+                          "name": "Berlin",
+                          "country": "DE",
+                          "country_name": "Germany",
+                          "links": {
+                            "self": "https://www.socials.homes/api/v1/cities/berlin",
+                            "supply": "https://www.socials.homes/api/v1/cities/berlin/supply",
+                            "page": "https://www.socials.homes/housing/berlin",
+                            "signup": "https://www.socials.homes/signup?city=berlin"
+                          }
+                        },
+                        "supply": {
+                          "available": false,
+                          "reason": "Live counts for this city are not available right now. That does not mean there are no homes: some housing sites are not counted here."
+                        },
+                        "note": "These are the listings Socials Homes counts in its own copy of the market; some housing sites are not counted here, so alerts can bring more. Counts refresh about every 10 minutes and change as homes are let.",
+                        "signup_url": "https://www.socials.homes/signup?city=berlin"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A parameter is invalid. errors names each one.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "invalid_limit": {
+                    "summary": "Invalid parameter",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-invalid_parameter",
+                      "title": "Invalid parameter",
+                      "status": 400,
+                      "detail": "limit must be a whole number from 1 to 200.",
+                      "code": "invalid_parameter",
+                      "resolution": "Correct the parameters listed in errors and send the request again. Every parameter is described in the OpenAPI document at https://www.socials.homes/openapi.json.",
+                      "instance": "/api/v1/cities",
+                      "errors": [
+                        {
+                          "parameter": "limit",
+                          "in": "query",
+                          "message": "limit must be a whole number from 1 to 200."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No covered city has this slug. suggestions lists close matches when there are any.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "city_not_found": {
+                    "summary": "City not found",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-city_not_found",
+                      "title": "City not found",
+                      "status": 404,
+                      "detail": "\"den_haag\" is not a city Socials Homes covers. Close matches: the_hague. It covers 124 cities; GET https://www.socials.homes/api/v1/cities lists them.",
+                      "code": "city_not_found",
+                      "resolution": "Use a slug from GET https://www.socials.homes/api/v1/cities, for example amsterdam or the_hague. Slugs are lowercase and use underscores.",
+                      "instance": "/api/v1/cities/den_haag",
+                      "suggestions": [
+                        {
+                          "slug": "the_hague",
+                          "name": "The Hague",
+                          "country": "NL",
+                          "country_name": "Netherlands"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "A rate limit is used up. Wait Retry-After seconds.",
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "rate_limited": {
+                    "summary": "Too many requests",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-rate_limited",
+                      "title": "Too many requests",
+                      "status": 429,
+                      "detail": "The \"api\" rate limit (300 requests per 60 seconds per IP address) is used up. Retry after 12 seconds.",
+                      "code": "rate_limited",
+                      "resolution": "Wait the number of seconds in the Retry-After header, then retry. The RateLimit headers on every endpoint response show how much of each budget is left.",
+                      "instance": "/api/v1/cities",
+                      "retry_after_seconds": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something failed on the Socials Homes side. No detail is exposed.",
+            "headers": {
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "internal_error": {
+                    "summary": "Internal error",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-internal_error",
+                      "title": "Internal error",
+                      "status": 500,
+                      "detail": "The request could not be completed. Nothing was changed.",
+                      "code": "internal_error",
+                      "resolution": "Retry after a short wait. If it keeps failing, email hello@socials.homes with the time of the request.",
+                      "instance": "/api/v1/plans"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-rate-limit": [
+          {
+            "policy": "api",
+            "limit": 300,
+            "window_seconds": 60,
+            "scope": "ip",
+            "note": "300 requests per 60 seconds per IP address, shared by every /api/v1 endpoint"
+          },
+          {
+            "policy": "supply",
+            "limit": 600,
+            "window_seconds": 3600,
+            "scope": "ip",
+            "note": "600 requests per 3600 seconds per IP address, on top of the api limit"
+          }
+        ]
+      }
+    },
+    "/api/v1/plans": {
+      "get": {
+        "operationId": "listPlans",
+        "summary": "List the plans with EUR prices, billing, renewal, inclusions and the VIP guarantee",
+        "tags": [
+          "plans"
+        ],
+        "description": "Every plan on sale with its EUR price as checkout charges it, how it bills, whether and at what price it renews, what it includes, how cancelling works, and the VIP Keys Pass guarantee with its conditions and terms link. Read-only.",
+        "responses": {
+          "200": {
+            "description": "The plans.",
+            "headers": {
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              },
+              "Link": {
+                "$ref": "#/components/headers/Link"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "Deprecation": {
+                "$ref": "#/components/headers/Deprecation"
+              },
+              "Sunset": {
+                "$ref": "#/components/headers/Sunset"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlansResponse"
+                },
+                "examples": {
+                  "plans": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "explorer",
+                          "name": "Explorer",
+                          "path": "on_your_own",
+                          "currency": "EUR",
+                          "price_eur": 24.95,
+                          "billing": "€24.95 today, then it renews automatically every month at €24.95 until you cancel.",
+                          "billing_interval": "month",
+                          "auto_renews": true,
+                          "renewal_price_eur": 24.95,
+                          "renews_every": "month",
+                          "per_month_eur": 24.95,
+                          "includes": [
+                            "Listings matched to your city, budget and move-in date, sent the moment they go live, on WhatsApp and in the web app",
+                            "2,000+ housing sites scanned for you",
+                            "Exclusive discount codes on listings from housing partners",
+                            "Support on WhatsApp and by email",
+                            "If you have not found a home when your plan ends, you can ask for one free extension by email before or within 7 days after it expires; it is granted at Socials' discretion, one per subscription (Terms 5.2)"
+                          ],
+                          "guarantee": null
+                        },
+                        {
+                          "id": "seeker",
+                          "name": "Seeker",
+                          "path": "on_your_own",
+                          "currency": "EUR",
+                          "price_eur": 39.9,
+                          "billing": "€39.90 every 2 months (€19.95 a month), renewing automatically every 2 months until you cancel.",
+                          "billing_interval": "2 months",
+                          "auto_renews": true,
+                          "renewal_price_eur": 39.9,
+                          "renews_every": "2 months",
+                          "per_month_eur": 19.95,
+                          "includes": [
+                            "Listings matched to your city, budget and move-in date, sent the moment they go live, on WhatsApp and in the web app",
+                            "2,000+ housing sites scanned for you",
+                            "Exclusive discount codes on listings from housing partners",
+                            "Support on WhatsApp and by email",
+                            "If you have not found a home when your plan ends, you can ask for one free extension by email before or within 7 days after it expires; it is granted at Socials' discretion, one per subscription (Terms 5.2)"
+                          ],
+                          "guarantee": null
+                        },
+                        {
+                          "id": "vip-3-months",
+                          "name": "VIP Keys Pass, 3 months",
+                          "path": "with_an_expert",
+                          "currency": "EUR",
+                          "price_eur": 94.95,
+                          "billing": "€94.95 today covers the first 3 months, then it renews automatically at €94.95 a month until you cancel.",
+                          "billing_interval": "3 months, then monthly",
+                          "auto_renews": true,
+                          "renewal_price_eur": 94.95,
+                          "renews_every": "month",
+                          "per_month_eur": 31.65,
+                          "includes": [
+                            "Everything a subscription includes",
+                            "A personal housing expert: a kick-off call to plan your search, help with your replies to landlords, checks on a landlord before you pay, and a read of your contract before you sign"
+                          ],
+                          "guarantee": {
+                            "summary": "If you have not signed a lease within 90 days of buying the VIP Keys Pass, what you paid at purchase is refunded (€94.95 for 3 months, €189.95 for Lifetime) and your expert keeps helping you for free until you move in. Conditions apply.",
+                            "url": "https://www.socials.homes/terms#vip-guarantee"
+                          }
+                        },
+                        {
+                          "id": "vip-lifetime",
+                          "name": "VIP Keys Pass, Lifetime",
+                          "path": "with_an_expert",
+                          "currency": "EUR",
+                          "price_eur": 189.95,
+                          "billing": "€189.95 once. It never renews: your alerts continue and your expert helps you until you move in.",
+                          "billing_interval": "one-time",
+                          "auto_renews": false,
+                          "renewal_price_eur": null,
+                          "renews_every": null,
+                          "per_month_eur": null,
+                          "includes": [
+                            "Everything a subscription includes",
+                            "A personal housing expert: a kick-off call to plan your search, help with your replies to landlords, checks on a landlord before you pay, and a read of your contract before you sign"
+                          ],
+                          "guarantee": {
+                            "summary": "If you have not signed a lease within 90 days of buying the VIP Keys Pass, what you paid at purchase is refunded (€94.95 for 3 months, €189.95 for Lifetime) and your expert keeps helping you for free until you move in. Conditions apply.",
+                            "url": "https://www.socials.homes/terms#vip-guarantee"
+                          }
+                        }
+                      ],
+                      "currency": "EUR",
+                      "prices_note": "Prices are in euros and include VAT where applicable. Checkout may show the amount in your local currency.",
+                      "cancellation": "Cancel anytime in the app and you are never billed again. Cancelling stops future renewals; your access runs to the end of the period you already paid for.",
+                      "refunds": "Payments are not refundable (Terms 5.1), except the VIP Keys Pass guarantee (Terms 5.5) and the 14-day right of withdrawal from the VIP expert service (Terms 5.6).",
+                      "vip_guarantee": {
+                        "summary": "If you have not signed a lease within 90 days of buying the VIP Keys Pass, what you paid at purchase is refunded (€94.95 for 3 months, €189.95 for Lifetime) and your expert keeps helping you for free until you move in. Conditions apply.",
+                        "conditions": [
+                          "Book your 15-minute kick-off call with your expert within 48 hours of purchase",
+                          "Keep your search budget within the range you agree with your expert",
+                          "Apply within 24 hours to the listings sent to you that match the criteria you agreed with your expert"
+                        ],
+                        "how_to_claim": "Claim from day 80 after purchase until 14 days after the 90 days end, by emailing hello@socials.homes. One claim per person.",
+                        "url": "https://www.socials.homes/terms#vip-guarantee"
+                      },
+                      "pricing_url": "https://www.socials.homes/pricing",
+                      "terms_url": "https://www.socials.homes/terms"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "A rate limit is used up. Wait Retry-After seconds.",
+            "headers": {
+              "Retry-After": {
+                "$ref": "#/components/headers/Retry-After"
+              },
+              "RateLimit-Policy": {
+                "$ref": "#/components/headers/RateLimit-Policy"
+              },
+              "RateLimit": {
+                "$ref": "#/components/headers/RateLimit"
+              },
+              "RateLimit-Limit": {
+                "$ref": "#/components/headers/RateLimit-Limit"
+              },
+              "RateLimit-Remaining": {
+                "$ref": "#/components/headers/RateLimit-Remaining"
+              },
+              "RateLimit-Reset": {
+                "$ref": "#/components/headers/RateLimit-Reset"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "rate_limited": {
+                    "summary": "Too many requests",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-rate_limited",
+                      "title": "Too many requests",
+                      "status": 429,
+                      "detail": "The \"api\" rate limit (300 requests per 60 seconds per IP address) is used up. Retry after 12 seconds.",
+                      "code": "rate_limited",
+                      "resolution": "Wait the number of seconds in the Retry-After header, then retry. The RateLimit headers on every endpoint response show how much of each budget is left.",
+                      "instance": "/api/v1/cities",
+                      "retry_after_seconds": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Something failed on the Socials Homes side. No detail is exposed.",
+            "headers": {
+              "X-API-Version": {
+                "$ref": "#/components/headers/X-API-Version"
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                },
+                "examples": {
+                  "internal_error": {
+                    "summary": "Internal error",
+                    "value": {
+                      "type": "https://www.socials.homes/developers#errors-internal_error",
+                      "title": "Internal error",
+                      "status": 500,
+                      "detail": "The request could not be completed. Nothing was changed.",
+                      "code": "internal_error",
+                      "resolution": "Retry after a short wait. If it keeps failing, email hello@socials.homes with the time of the request.",
+                      "instance": "/api/v1/plans"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-rate-limit": [
+          {
+            "policy": "api",
+            "limit": 300,
+            "window_seconds": 60,
+            "scope": "ip",
+            "note": "300 requests per 60 seconds per IP address, shared by every /api/v1 endpoint"
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "City": {
+        "type": "object",
+        "description": "A city Socials Homes covers. The slug is the identifier every endpoint and the signup funnel use.",
+        "required": [
+          "slug",
+          "name",
+          "country",
+          "country_name",
+          "links"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Lowercase, digits and underscores, for example the_hague.",
+            "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$",
+            "examples": [
+              "the_hague"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "The English name.",
+            "examples": [
+              "The Hague"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2 country code.",
+            "pattern": "^[A-Z]{2}$",
+            "examples": [
+              "NL"
+            ]
+          },
+          "country_name": {
+            "type": "string",
+            "description": "The English country name.",
+            "examples": [
+              "Netherlands"
+            ]
+          },
+          "links": {
+            "type": "object",
+            "description": "Where to go next for this city.",
+            "required": [
+              "self",
+              "supply",
+              "page",
+              "signup"
+            ],
+            "properties": {
+              "self": {
+                "type": "string",
+                "format": "uri",
+                "description": "This city in the API."
+              },
+              "supply": {
+                "type": "string",
+                "format": "uri",
+                "description": "Live listing counts for this city."
+              },
+              "page": {
+                "type": "string",
+                "format": "uri",
+                "description": "The city's page on www.socials.homes."
+              },
+              "signup": {
+                "type": "string",
+                "format": "uri",
+                "description": "The signup funnel with this city selected. The person sets up their own search there; this API never creates one."
+              }
+            }
+          }
+        }
+      },
+      "CityList": {
+        "type": "object",
+        "description": "One page of cities, ordered by slug.",
+        "required": [
+          "data",
+          "next_cursor"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The cities on this page.",
+            "items": {
+              "$ref": "#/components/schemas/City"
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Pass as cursor to get the next page. Null on the last page.",
+            "pattern": "^c1\\.[A-Za-z0-9_-]{1,200}$"
+          }
+        }
+      },
+      "CityResponse": {
+        "type": "object",
+        "description": "One city.",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/City"
+          }
+        }
+      },
+      "SupplyAvailable": {
+        "type": "object",
+        "description": "Live counts are available for this city.",
+        "required": [
+          "available",
+          "live_listings",
+          "budget_max_eur",
+          "listings_within_budget",
+          "level",
+          "suggested_budget_eur"
+        ],
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "const": true,
+            "description": "Live counts are available."
+          },
+          "live_listings": {
+            "type": "integer",
+            "description": "Live listings Socials Homes counts in this city right now, at any price.",
+            "minimum": 1
+          },
+          "budget_max_eur": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "The budget asked for, or null when none was given."
+          },
+          "listings_within_budget": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Live listings at or under the budget. Listings without a stated price are included, as they are in alerts. Null without a budget.",
+            "minimum": 0
+          },
+          "level": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "critical",
+              "low",
+              "ok",
+              null
+            ],
+            "description": "How the budget reads: critical (under 5 listings), low (5 to 15) or ok (16 or more). Null without a budget."
+          },
+          "suggested_budget_eur": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "A budget that would reach about 30 listings when the market is thin at the asked budget, rounded up to the nearest 50. Null when the budget is fine or no budget would help."
+          }
+        }
+      },
+      "SupplyUnavailable": {
+        "type": "object",
+        "description": "Live counts are not available for this city right now. This never means zero homes: some housing sites are not counted here.",
+        "required": [
+          "available",
+          "reason"
+        ],
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "const": false,
+            "description": "Live counts are not available."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why, in a sentence to pass on as written.",
+            "examples": [
+              "Live counts for this city are not available right now. That does not mean there are no homes: some housing sites are not counted here."
+            ]
+          }
+        }
+      },
+      "Supply": {
+        "description": "The live count, or a plain statement that it is unavailable. Unavailable is never reported as zero.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SupplyAvailable"
+          },
+          {
+            "$ref": "#/components/schemas/SupplyUnavailable"
+          }
+        ]
+      },
+      "SupplyResponse": {
+        "type": "object",
+        "description": "Live listing counts for one city.",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "The city, its counts and what the counts cover.",
+            "required": [
+              "city",
+              "supply",
+              "note",
+              "signup_url"
+            ],
+            "properties": {
+              "city": {
+                "$ref": "#/components/schemas/City"
+              },
+              "supply": {
+                "$ref": "#/components/schemas/Supply"
+              },
+              "note": {
+                "type": "string",
+                "description": "What the counts cover: the listings Socials Homes counts in its own copy of the market, refreshed about every 10 minutes."
+              },
+              "signup_url": {
+                "type": "string",
+                "format": "uri",
+                "description": "The signup funnel with this city selected."
+              }
+            }
+          }
+        }
+      },
+      "Guarantee": {
+        "type": "object",
+        "description": "The VIP guarantee, in short, with the link to its full terms.",
+        "required": [
+          "summary",
+          "url"
+        ],
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "The guarantee in a sentence, with its conditions noted."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The guarantee's section of the terms."
+          }
+        }
+      },
+      "Plan": {
+        "type": "object",
+        "description": "One plan, priced in EUR, as checkout charges it.",
+        "required": [
+          "id",
+          "name",
+          "path",
+          "currency",
+          "price_eur",
+          "billing",
+          "billing_interval",
+          "auto_renews",
+          "renewal_price_eur",
+          "renews_every",
+          "per_month_eur",
+          "includes",
+          "guarantee"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Plan identifier. Today: explorer, seeker, vip-3-months, vip-lifetime. An open set: new plans may appear within v1.",
+            "examples": [
+              "seeker"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "The plan's name."
+          },
+          "path": {
+            "type": "string",
+            "description": "Search on your own (on_your_own) or with a personal housing expert (with_an_expert). An open set.",
+            "examples": [
+              "on_your_own"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "description": "Always EUR.",
+            "const": "EUR"
+          },
+          "price_eur": {
+            "type": "number",
+            "description": "What is charged at purchase, in EUR.",
+            "minimum": 0
+          },
+          "billing": {
+            "type": "string",
+            "description": "How the charge recurs, in words a person reads."
+          },
+          "billing_interval": {
+            "type": "string",
+            "description": "The billing shape. Today: \"month\", \"2 months\", \"3 months, then monthly\", \"one-time\". An open set: read billing for the words.",
+            "examples": [
+              "2 months"
+            ]
+          },
+          "auto_renews": {
+            "type": "boolean",
+            "description": "Whether the plan renews automatically until cancelled."
+          },
+          "renewal_price_eur": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "What each renewal charges, in EUR. Null for a one-time payment.",
+            "minimum": 0
+          },
+          "renews_every": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The renewal interval, today \"month\" or \"2 months\". Null for a one-time payment.",
+            "examples": [
+              "month"
+            ]
+          },
+          "per_month_eur": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "The honest per-month figure for the first term. Null for Lifetime.",
+            "minimum": 0
+          },
+          "includes": {
+            "type": "array",
+            "description": "What the plan includes.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "guarantee": {
+            "description": "The VIP guarantee, or null for plans without one.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Guarantee"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "VipGuarantee": {
+        "type": "object",
+        "description": "The VIP Keys Pass 90-day guarantee with its conditions.",
+        "required": [
+          "summary",
+          "conditions",
+          "how_to_claim",
+          "url"
+        ],
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "The guarantee in a sentence."
+          },
+          "conditions": {
+            "type": "array",
+            "description": "What the buyer must do for the guarantee to apply.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "how_to_claim": {
+            "type": "string",
+            "description": "When and how to claim."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The guarantee's section of the terms."
+          }
+        }
+      },
+      "PlansResponse": {
+        "type": "object",
+        "description": "Every plan on sale, with the terms that apply to all of them.",
+        "required": [
+          "data",
+          "currency",
+          "prices_note",
+          "cancellation",
+          "refunds",
+          "vip_guarantee",
+          "pricing_url",
+          "terms_url"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The plans, cheapest path first.",
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            }
+          },
+          "currency": {
+            "type": "string",
+            "description": "Always EUR.",
+            "const": "EUR"
+          },
+          "prices_note": {
+            "type": "string",
+            "description": "VAT and currency display."
+          },
+          "cancellation": {
+            "type": "string",
+            "description": "How cancelling works."
+          },
+          "refunds": {
+            "type": "string",
+            "description": "When payments are refunded."
+          },
+          "vip_guarantee": {
+            "$ref": "#/components/schemas/VipGuarantee"
+          },
+          "pricing_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The pricing page."
+          },
+          "terms_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The terms of service."
+          }
+        }
+      },
+      "ApiIndex": {
+        "type": "object",
+        "description": "What this API is and where everything is.",
+        "required": [
+          "name",
+          "version",
+          "spec_version",
+          "released",
+          "description",
+          "authentication",
+          "read_only",
+          "documentation_url",
+          "documentation_markdown_url",
+          "openapi_url",
+          "openapi_yaml_url",
+          "api_catalog_url",
+          "endpoints",
+          "rate_limits",
+          "mcp_servers",
+          "contact",
+          "terms_url"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The API's name."
+          },
+          "version": {
+            "type": "string",
+            "description": "The major version in the path.",
+            "const": "1"
+          },
+          "spec_version": {
+            "type": "string",
+            "description": "SemVer of the v1 contract, as in info.version.",
+            "examples": [
+              "1.0.1"
+            ]
+          },
+          "released": {
+            "type": "string",
+            "description": "When this version was released.",
+            "format": "date"
+          },
+          "description": {
+            "type": "string",
+            "description": "What the API offers."
+          },
+          "authentication": {
+            "type": "object",
+            "description": "How to authenticate: you do not.",
+            "required": [
+              "required",
+              "description"
+            ],
+            "properties": {
+              "required": {
+                "type": "boolean",
+                "const": false,
+                "description": "No authentication exists or is needed."
+              },
+              "description": {
+                "type": "string",
+                "description": "The authentication model in words."
+              }
+            }
+          },
+          "read_only": {
+            "type": "boolean",
+            "const": true,
+            "description": "No endpoint writes anything."
+          },
+          "documentation_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The developer docs."
+          },
+          "documentation_markdown_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The developer docs in markdown."
+          },
+          "openapi_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "This OpenAPI document, JSON."
+          },
+          "openapi_yaml_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "This OpenAPI document, YAML."
+          },
+          "api_catalog_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The RFC 9727 API catalog."
+          },
+          "endpoints": {
+            "type": "array",
+            "description": "Every endpoint.",
+            "items": {
+              "type": "object",
+              "description": "One endpoint.",
+              "required": [
+                "operation_id",
+                "method",
+                "path",
+                "url",
+                "summary"
+              ],
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "description": "The OpenAPI operationId."
+                },
+                "method": {
+                  "type": "string",
+                  "description": "Always GET.",
+                  "const": "GET"
+                },
+                "path": {
+                  "type": "string",
+                  "description": "The path template."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "The absolute URL, as an RFC 6570 URI template where the path has {slug}.",
+                  "format": "uri-template"
+                },
+                "summary": {
+                  "type": "string",
+                  "description": "What it returns."
+                }
+              }
+            }
+          },
+          "rate_limits": {
+            "type": "array",
+            "description": "The rate limit policies.",
+            "items": {
+              "type": "object",
+              "description": "One rate limit policy.",
+              "required": [
+                "name",
+                "limit",
+                "window_seconds",
+                "applies_to"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The policy name used in the RateLimit headers: today \"api\" and \"supply\"."
+                },
+                "limit": {
+                  "type": "integer",
+                  "description": "Requests allowed per window.",
+                  "minimum": 1
+                },
+                "window_seconds": {
+                  "type": "integer",
+                  "description": "The window, in seconds.",
+                  "minimum": 1
+                },
+                "applies_to": {
+                  "type": "string",
+                  "description": "Which requests count."
+                }
+              }
+            }
+          },
+          "mcp_servers": {
+            "type": "array",
+            "description": "The public MCP servers.",
+            "items": {
+              "type": "object",
+              "description": "One MCP server with the same data.",
+              "required": [
+                "name",
+                "url",
+                "server_card"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The server's title."
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "The Streamable HTTP endpoint."
+                },
+                "server_card": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "The server card."
+                }
+              }
+            }
+          },
+          "contact": {
+            "type": "string",
+            "description": "Who to write to.",
+            "format": "email"
+          },
+          "terms_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The terms of service."
+          }
+        }
+      },
+      "ParameterError": {
+        "type": "object",
+        "description": "One invalid parameter.",
+        "required": [
+          "parameter",
+          "in",
+          "message"
+        ],
+        "properties": {
+          "parameter": {
+            "type": "string",
+            "description": "The parameter's name."
+          },
+          "in": {
+            "type": "string",
+            "description": "Where the parameter goes.",
+            "enum": [
+              "query",
+              "path"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "What is wrong and what is accepted."
+          }
+        }
+      },
+      "CitySuggestion": {
+        "type": "object",
+        "description": "A covered city close to what was asked for.",
+        "required": [
+          "slug",
+          "name",
+          "country",
+          "country_name"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "The slug to use.",
+            "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "description": "The English name."
+          },
+          "country": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2 country code.",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "country_name": {
+            "type": "string",
+            "description": "The English country name."
+          }
+        }
+      },
+      "Problem": {
+        "type": "object",
+        "description": "An RFC 9457 problem details object. Every error this API returns has this shape, served as application/problem+json.",
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "code",
+          "resolution"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri",
+            "description": "Identifies the problem type and dereferences to its documentation."
+          },
+          "title": {
+            "type": "string",
+            "description": "A short summary of the problem type."
+          },
+          "status": {
+            "type": "integer",
+            "description": "The HTTP status code.",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "detail": {
+            "type": "string",
+            "description": "What went wrong with this request."
+          },
+          "instance": {
+            "type": "string",
+            "description": "The path of the request that failed."
+          },
+          "code": {
+            "type": "string",
+            "description": "A machine-readable error code. Every code listed here keeps its meaning within v1; a new one may be added, so handle an unknown code by its HTTP status.",
+            "enum": [
+              "invalid_parameter",
+              "not_found",
+              "city_not_found",
+              "method_not_allowed",
+              "rate_limited",
+              "internal_error"
+            ]
+          },
+          "resolution": {
+            "type": "string",
+            "description": "What to do next."
+          },
+          "errors": {
+            "type": "array",
+            "description": "Each invalid parameter, on invalid_parameter.",
+            "items": {
+              "$ref": "#/components/schemas/ParameterError"
+            }
+          },
+          "suggestions": {
+            "type": "array",
+            "description": "Close matches, on city_not_found or a malformed slug.",
+            "items": {
+              "$ref": "#/components/schemas/CitySuggestion"
+            }
+          },
+          "allowed_methods": {
+            "type": "array",
+            "description": "The methods this path accepts, on method_not_allowed.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ]
+            }
+          },
+          "retry_after_seconds": {
+            "type": "integer",
+            "description": "Seconds to wait, on rate_limited. The Retry-After header carries the same value.",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "parameters": {
+      "slug": {
+        "name": "slug",
+        "in": "path",
+        "required": true,
+        "description": "The city's slug from listCities: lowercase, digits and underscores (the_hague, not the-hague).",
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$",
+          "maxLength": 60
+        },
+        "examples": {
+          "amsterdam": {
+            "value": "amsterdam"
+          },
+          "the_hague": {
+            "value": "the_hague"
+          }
+        }
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "description": "How many cities per page, from 1 to 200. Default 50.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        }
+      },
+      "cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "description": "The next_cursor of the previous page, passed as it is. Opaque: do not build or change one. Leave it out for the first page.",
+        "schema": {
+          "type": "string",
+          "pattern": "^c1\\.[A-Za-z0-9_-]{1,200}$"
+        }
+      },
+      "country": {
+        "name": "country",
+        "in": "query",
+        "required": false,
+        "description": "Only cities in this country: an ISO 3166-1 alpha-2 code (\"NL\") or an English or common name (\"Netherlands\", \"Holland\", \"UK\"). A country with no covered city returns an empty page.",
+        "schema": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "examples": {
+          "code": {
+            "value": "NL"
+          },
+          "name": {
+            "value": "Germany"
+          }
+        }
+      },
+      "budget_max_eur": {
+        "name": "budget_max_eur",
+        "in": "query",
+        "required": false,
+        "description": "Maximum monthly rent in EUR, a whole number from 50 to 20000. With it, the answer also counts the listings at or under it.",
+        "schema": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 20000
+        },
+        "example": 800
+      }
+    },
+    "headers": {
+      "RateLimit-Policy": {
+        "description": "The rate limit policies this request counts against (draft-ietf-httpapi-ratelimit-headers): name, quota q and window w in seconds. \"api\" on every endpoint, \"supply\" as well on the supply endpoint.",
+        "schema": {
+          "type": "string",
+          "examples": [
+            "\"api\";q=300;w=60",
+            "\"api\";q=300;w=60, \"supply\";q=600;w=3600"
+          ]
+        }
+      },
+      "RateLimit": {
+        "description": "What is left of each policy: remaining requests r and seconds t until the window resets.",
+        "schema": {
+          "type": "string",
+          "examples": [
+            "\"api\";r=299;t=60"
+          ]
+        }
+      },
+      "RateLimit-Limit": {
+        "description": "Requests allowed in the window of the policy closest to running out (earlier draft field).",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "RateLimit-Remaining": {
+        "description": "Requests left in that window (earlier draft field).",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "RateLimit-Reset": {
+        "description": "Seconds until that window resets (earlier draft field).",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "Retry-After": {
+        "description": "Seconds to wait before retrying.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "X-API-Version": {
+        "description": "The major version that answered.",
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "Link": {
+        "description": "RFC 8288 links: rel=\"next\" to the next page on listCities, and on every JSON and problem response rel=\"service-desc\" (this document) and rel=\"service-doc\" (the docs).",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Cache-Control": {
+        "description": "How long the answer may be reused.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Deprecation": {
+        "description": "Not sent today. Sent (RFC 9745) once this endpoint or version is deprecated, at least 90 days before it stops working.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Sunset": {
+        "description": "Not sent today. Sent (RFC 8594) with the date a deprecated endpoint or version stops working.",
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "x-api-version": "1",
+  "x-released": "2026-10-14",
+  "x-authentication": "none",
+  "x-read-only": true,
+  "x-rate-limits": [
+    {
+      "policy": "api",
+      "limit": 300,
+      "window_seconds": 60,
+      "scope": "ip",
+      "note": "300 requests per 60 seconds per IP address, shared by every /api/v1 endpoint"
+    },
+    {
+      "policy": "supply",
+      "limit": 600,
+      "window_seconds": 3600,
+      "scope": "ip",
+      "note": "600 requests per 3600 seconds per IP address, on top of the api limit"
+    }
+  ],
+  "x-changelog": [
+    {
+      "version": "1.0.1",
+      "date": "2026-10-14",
+      "changes": [
+        "The official JavaScript SDK and CLI, the socials-homes package on npm: see SDKs and CLI",
+        "The OpenAPI document writes every error response out on its operation, typed as Problem. No response changed"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-10-14",
+      "changes": [
+        "First release of the public REST API: GET /api/v1, /api/v1/cities, /api/v1/cities/{slug}, /api/v1/cities/{slug}/supply and /api/v1/plans",
+        "OpenAPI 3.1 document at /openapi.json and /api/openapi.yaml, and an RFC 9727 API catalog at /.well-known/api-catalog",
+        "RFC 9457 problem details on every error, IETF RateLimit headers on every endpoint response"
+      ]
+    }
+  ]
+}

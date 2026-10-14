@@ -1,0 +1,82 @@
+{
+  "name": "Socials Homes API",
+  "version": "1",
+  "spec_version": "1.0.0",
+  "released": "2026-10-14",
+  "description": "Public, read-only data from Socials Homes, a rental listing alert service for people moving to a new city: the cities it covers, its plans and prices, and live listing counts per city and budget.",
+  "authentication": {
+    "required": false,
+    "description": "None. Every endpoint is anonymous and read-only: no account, API key, OAuth or sign-up exists or is needed."
+  },
+  "read_only": true,
+  "documentation_url": "https://www.socials.homes/developers",
+  "documentation_markdown_url": "https://www.socials.homes/developers.md",
+  "openapi_url": "https://www.socials.homes/openapi.json",
+  "openapi_yaml_url": "https://www.socials.homes/api/openapi.yaml",
+  "api_catalog_url": "https://www.socials.homes/.well-known/api-catalog",
+  "endpoints": [
+    {
+      "operation_id": "getApiIndex",
+      "method": "GET",
+      "path": "/api/v1",
+      "url": "https://www.socials.homes/api/v1",
+      "summary": "API index: every endpoint, the OpenAPI document, the docs and the rate limits"
+    },
+    {
+      "operation_id": "listCities",
+      "method": "GET",
+      "path": "/api/v1/cities",
+      "url": "https://www.socials.homes/api/v1/cities",
+      "summary": "List the cities Socials Homes covers"
+    },
+    {
+      "operation_id": "getCity",
+      "method": "GET",
+      "path": "/api/v1/cities/{slug}",
+      "url": "https://www.socials.homes/api/v1/cities/{slug}",
+      "summary": "Get one city by its slug"
+    },
+    {
+      "operation_id": "getCitySupply",
+      "method": "GET",
+      "path": "/api/v1/cities/{slug}/supply",
+      "url": "https://www.socials.homes/api/v1/cities/{slug}/supply",
+      "summary": "Count live rental listings in a city, optionally at or under a monthly budget"
+    },
+    {
+      "operation_id": "listPlans",
+      "method": "GET",
+      "path": "/api/v1/plans",
+      "url": "https://www.socials.homes/api/v1/plans",
+      "summary": "List the plans with EUR prices, billing, renewal, inclusions and the VIP guarantee"
+    }
+  ],
+  "rate_limits": [
+    {
+      "name": "api",
+      "limit": 300,
+      "window_seconds": 60,
+      "applies_to": "Every /api/v1 request, per IP address"
+    },
+    {
+      "name": "supply",
+      "limit": 600,
+      "window_seconds": 3600,
+      "applies_to": "/api/v1/cities/{slug}/supply, per IP address, on top of the api limit"
+    }
+  ],
+  "mcp_servers": [
+    {
+      "name": "Socials Homes",
+      "url": "https://www.socials.homes/mcp",
+      "server_card": "https://www.socials.homes/mcp/server-card"
+    },
+    {
+      "name": "Socials Homes Docs",
+      "url": "https://www.socials.homes/mcp/docs",
+      "server_card": "https://www.socials.homes/mcp/docs/server-card"
+    }
+  ],
+  "contact": "hello@socials.homes",
+  "terms_url": "https://www.socials.homes/terms"
+}

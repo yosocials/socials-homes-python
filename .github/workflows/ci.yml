@@ -1,0 +1,63 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Tests, standard library only
+        run: python -m unittest -v
+        env:
+          PYTHONPATH: src
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.20"
+      - run: uvx mypy@2.4.0 --strict src
+      - run: uvx ruff@0.17.0 check
+      - run: uvx ruff@0.17.0 format --check
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.20"
+      - run: uv build --python 3.12 --build-constraints .github/build-constraints.txt --require-hashes
+      - name: Only the package, README, LICENSE and pyproject would be published
+        run: python3 .github/scripts/check_dist.py
+      - name: The wheel installs and its command runs
+        run: |
+          uv venv "$RUNNER_TEMP/venv"
+          uv pip install --python "$RUNNER_TEMP/venv" dist/*.whl
+          test "$("$RUNNER_TEMP/venv/bin/socials-homes" --version)" = "$("$RUNNER_TEMP/venv/bin/python" -c 'import socials_homes; print(socials_homes.VERSION)')"
+          "$RUNNER_TEMP/venv/bin/python" -m socials_homes --help > /dev/null

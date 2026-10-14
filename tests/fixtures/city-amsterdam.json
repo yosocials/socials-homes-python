@@ -1,0 +1,14 @@
+{
+  "data": {
+    "slug": "amsterdam",
+    "name": "Amsterdam",
+    "country": "NL",
+    "country_name": "Netherlands",
+    "links": {
+      "self": "https://www.socials.homes/api/v1/cities/amsterdam",
+      "supply": "https://www.socials.homes/api/v1/cities/amsterdam/supply",
+      "page": "https://www.socials.homes/housing/amsterdam",
+      "signup": "https://www.socials.homes/signup?city=amsterdam"
+    }
+  }
+}

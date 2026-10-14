@@ -1,0 +1,109 @@
+name: publish
+
+# PyPI Trusted Publishing: PyPI trusts this workflow, in the pypi environment,
+# through a short-lived OIDC token. No API token or secret exists. Only the
+# pypi job can ask for that token, and it runs nothing but the upload of the
+# files the build job made. The build job runs no tool beyond uv and the
+# hash-checked build backend; tests and lint run in jobs of their own.
+#
+# The gate is in the settings, since any branch can edit this file:
+# - GitHub, Settings, Environments, pypi: deployments from main and tags v*
+#   only, with a required reviewer.
+# - PyPI, socials-homes, Publishing: a trusted publisher for
+#   yosocials/socials-homes-python, workflow publish.yml, environment pypi.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.20"
+          enable-cache: false
+      - name: Tests on every supported Python
+        env:
+          PYTHONPATH: src
+        run: |
+          for v in 3.9 3.10 3.11 3.12 3.13 3.14; do
+            uv run --python "$v" --no-project python -m unittest
+          done
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.20"
+          enable-cache: false
+      - run: uvx mypy@2.4.0 --strict src
+      - run: uvx ruff@0.17.0 check
+
+  build:
+    # A manual run publishes from main only.
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: The commit is on main
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - name: The release tag names this version
+        if: github.event_name == 'release'
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          PYTHONPATH: src
+        run: |
+          version="$(python3 -c 'import socials_homes; print(socials_homes.VERSION)')"
+          if [ "$TAG" != "v$version" ] && [ "$TAG" != "$version" ]; then
+            echo "Release $TAG does not match version $version"
+            exit 1
+          fi
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.20"
+          # A release is built from a clean slate, never from a restored cache.
+          enable-cache: false
+      - name: Build the sdist and the wheel with the pinned, hash-checked hatchling
+        run: uv build --python 3.12 --build-constraints .github/build-constraints.txt --require-hashes
+      - name: Only the package, README, LICENSE and pyproject would be published
+        run: python3 .github/scripts/check_dist.py
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  pypi:
+    needs: [test, lint, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/socials-homes/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2

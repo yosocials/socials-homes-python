@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "socials-homes"
+version = "1.0.0"
+description = "Official Python SDK and CLI for the Socials Homes API: covered cities, plans and prices, and live rental listing counts per city and budget. Read-only, no API key."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Socials BV", email = "hello@socials.homes" }]
+maintainers = [{ name = "Socials BV", email = "hello@socials.homes" }]
+keywords = [
+  "socials-homes",
+  "rental",
+  "housing",
+  "apartments",
+  "rent",
+  "listings",
+  "api",
+  "sdk",
+  "cli",
+  "openapi",
+  "ai-agents",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://www.socials.homes/developers"
+Documentation = "https://www.socials.homes/developers"
+Source = "https://github.com/yosocials/socials-homes-python"
+Issues = "https://github.com/yosocials/socials-homes-python/issues"
+
+[project.scripts]
+socials-homes = "socials_homes.cli:entry"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/socials_homes"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/socials_homes", "README.md", "LICENSE", "pyproject.toml"]
+
+[tool.mypy]
+strict = true
+files = ["src"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "S", "BLE", "PL"]
+ignore = [
+  "PLR0911", # a renderer or a dispatcher returns from each branch
+  "PLR0912",
+  "PLR0913", # the client's options mirror the JavaScript SDK one for one
+  "PLR0917", # urllib's redirect_request and the pickle rebuild take their arguments positionally
+  "PLR2004", # HTTP statuses read best as numbers
+]
+
+[tool.ruff.lint.pyupgrade]
+# Optional and Union stay readable to typing.get_type_hints on Python 3.9.
+keep-runtime-typing = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "PLR", "PLC0415", "BLE"]

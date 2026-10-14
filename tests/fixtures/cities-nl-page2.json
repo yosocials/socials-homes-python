@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "slug": "breda",
+      "name": "Breda",
+      "country": "NL",
+      "country_name": "Netherlands",
+      "links": {
+        "self": "https://www.socials.homes/api/v1/cities/breda",
+        "supply": "https://www.socials.homes/api/v1/cities/breda/supply",
+        "page": "https://www.socials.homes/housing/breda",
+        "signup": "https://www.socials.homes/signup?city=breda"
+      }
+    },
+    {
+      "slug": "delft",
+      "name": "Delft",
+      "country": "NL",
+      "country_name": "Netherlands",
+      "links": {
+        "self": "https://www.socials.homes/api/v1/cities/delft",
+        "supply": "https://www.socials.homes/api/v1/cities/delft/supply",
+        "page": "https://www.socials.homes/housing/delft",
+        "signup": "https://www.socials.homes/signup?city=delft"
+      }
+    }
+  ],
+  "next_cursor": "c1.eyJhZnRlciI6ImRlbGZ0In0"
+}

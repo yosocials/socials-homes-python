@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "slug": "almere",
+      "name": "Almere",
+      "country": "NL",
+      "country_name": "Netherlands",
+      "links": {
+        "self": "https://www.socials.homes/api/v1/cities/almere",
+        "supply": "https://www.socials.homes/api/v1/cities/almere/supply",
+        "page": "https://www.socials.homes/housing/almere",
+        "signup": "https://www.socials.homes/signup?city=almere"
+      }
+    },
+    {
+      "slug": "amsterdam",
+      "name": "Amsterdam",
+      "country": "NL",
+      "country_name": "Netherlands",
+      "links": {
+        "self": "https://www.socials.homes/api/v1/cities/amsterdam",
+        "supply": "https://www.socials.homes/api/v1/cities/amsterdam/supply",
+        "page": "https://www.socials.homes/housing/amsterdam",
+        "signup": "https://www.socials.homes/signup?city=amsterdam"
+      }
+    }
+  ],
+  "next_cursor": "c1.eyJhZnRlciI6ImFtc3RlcmRhbSJ9"
+}

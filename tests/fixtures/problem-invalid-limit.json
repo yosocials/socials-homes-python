@@ -1,0 +1,16 @@
+{
+  "type": "https://www.socials.homes/developers#errors-invalid_parameter",
+  "title": "Invalid parameter",
+  "status": 400,
+  "detail": "limit must be a whole number from 1 to 200.",
+  "code": "invalid_parameter",
+  "resolution": "Correct the parameters listed in errors and send the request again. Every parameter is described in the OpenAPI document at https://www.socials.homes/openapi.json.",
+  "instance": "/api/v1/cities",
+  "errors": [
+    {
+      "parameter": "limit",
+      "in": "query",
+      "message": "limit must be a whole number from 1 to 200."
+    }
+  ]
+}

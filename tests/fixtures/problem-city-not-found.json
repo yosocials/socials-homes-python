@@ -1,0 +1,17 @@
+{
+  "type": "https://www.socials.homes/developers#errors-city_not_found",
+  "title": "City not found",
+  "status": 404,
+  "detail": "\"den_haag\" is not a city Socials Homes covers. Close matches: the_hague. It covers 124 cities; GET https://www.socials.homes/api/v1/cities lists them.",
+  "code": "city_not_found",
+  "resolution": "Use a slug from GET https://www.socials.homes/api/v1/cities, for example amsterdam or the_hague. Slugs are lowercase and use underscores.",
+  "instance": "/api/v1/cities/den_haag",
+  "suggestions": [
+    {
+      "slug": "the_hague",
+      "name": "The Hague",
+      "country": "NL",
+      "country_name": "Netherlands"
+    }
+  ]
+}
